@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- App basics -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <!-- Build defaults -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugType>portable</DebugType>
+
+    <!-- Versioning -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Company>UvcPaneler</Company>
+    <Product>Windows UVC Control Panel</Product>
+    <Copyright>Copyright © 2024</Copyright>
+    <Description>Windows application for accessing USB Video Class (UVC) camera property pages and settings dialogs</Description>
+
+    <!-- Optional: produce deterministic builds -->
+    <Deterministic>true</Deterministic>
+
+    <!-- Runtime identifiers for publishing -->
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- DirectShow interop (older package; expect NU1701 warning on restore, safe to ignore) -->
+    <PackageReference Include="DirectShowLib" Version="1.0.0" />
+  </ItemGroup>
+</Project>
