@@ -24,7 +24,7 @@ A Windows application for accessing USB Video Class (UVC) camera property pages 
 
 ## Download
 
-Pre-built executables are available in the [Releases](https://github.com/yourusername/windows-uvc-control-panel/releases) section.
+Pre-built executables are available in the [Releases](https://github.com/herzigma/windows-uvc-control-panel/releases) section.
 
 Choose the appropriate version:
 - **Self-contained**: Larger file size (~50-70 MB) but no .NET runtime required
