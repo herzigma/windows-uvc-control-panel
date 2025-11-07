@@ -28,10 +28,20 @@
 
     <!-- Runtime identifiers for publishing -->
     <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+
+    <!-- Application icon (if icon.ico exists) -->
+    <ApplicationIcon Condition="Exists('icon.ico')">icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- DirectShow interop (older package; expect NU1701 warning on restore, safe to ignore) -->
     <PackageReference Include="DirectShowLib" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include icon file in output if it exists -->
+    <None Condition="Exists('icon.ico')" Include="icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

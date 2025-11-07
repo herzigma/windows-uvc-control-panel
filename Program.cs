@@ -114,6 +114,8 @@ namespace UvcPaneler
         private Button _btnRefresh;
         private TextBox _log;
         private Label _hint;
+        private NotifyIcon _notifyIcon = null!;
+        private bool _isClosing = false;
 
         private class CamItem
         {
@@ -129,6 +131,19 @@ namespace UvcPaneler
             Width = 900;
             Height = 600;
             StartPosition = FormStartPosition.CenterScreen;
+
+            // Set window icon if available
+            try
+            {
+                if (File.Exists("icon.ico"))
+                {
+                    Icon = new Icon("icon.ico");
+                }
+            }
+            catch
+            {
+                // If icon can't be loaded, use default
+            }
 
             _lst = new ListBox { Left = 12, Top = 12, Width = 380, Height = 500 };
             _btnRefresh = new Button { Left = 12, Top = 520, Width = 120, Height = 30, Text = "Refresh" };
@@ -159,7 +174,99 @@ namespace UvcPaneler
             _btnMf.Click  += (_, __) => TryMfExploratory();
             _btnShell.Click += (_, __) => OpenDeviceManager();
 
+            // Setup system tray icon
+            SetupTrayIcon();
+
+            // Handle window state changes
+            Resize += MainForm_Resize;
+            FormClosing += MainForm_FormClosing;
+
             LoadCameras();
+        }
+
+        private void SetupTrayIcon()
+        {
+            // Try to load custom icon, fall back to system icon if not found
+            Icon? customIcon = null;
+            try
+            {
+                if (File.Exists("icon.ico"))
+                {
+                    customIcon = new Icon("icon.ico");
+                }
+            }
+            catch
+            {
+                // If icon file exists but can't be loaded, fall back to system icon
+            }
+
+            _notifyIcon = new NotifyIcon
+            {
+                Icon = customIcon ?? SystemIcons.Application,
+                Text = "UvcPaneler — Camera Property Pages",
+                Visible = true
+            };
+
+            // Create context menu
+            var contextMenu = new ContextMenuStrip();
+            var showItem = new ToolStripMenuItem("Show");
+            showItem.Click += (_, __) => ShowWindow();
+            contextMenu.Items.Add(showItem);
+
+            contextMenu.Items.Add(new ToolStripSeparator());
+
+            var exitItem = new ToolStripMenuItem("Exit");
+            exitItem.Click += (_, __) => ExitApplication();
+            contextMenu.Items.Add(exitItem);
+
+            _notifyIcon.ContextMenuStrip = contextMenu;
+            _notifyIcon.DoubleClick += (_, __) => ShowWindow();
+        }
+
+        private void MainForm_Resize(object? sender, EventArgs e)
+        {
+            // Minimize to tray when window is minimized
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                _notifyIcon.ShowBalloonTip(2000, "UvcPaneler", "Application minimized to system tray", ToolTipIcon.Info);
+            }
+        }
+
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (!_isClosing)
+            {
+                // Cancel the close and minimize to tray instead
+                e.Cancel = true;
+                WindowState = FormWindowState.Minimized;
+                Hide();
+            }
+        }
+
+        private void ShowWindow()
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            Activate();
+            BringToFront();
+        }
+
+        private void ExitApplication()
+        {
+            _isClosing = true;
+            _notifyIcon.Visible = false;
+            _notifyIcon.Dispose();
+            Application.Exit();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _notifyIcon?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private void AppendLog(string s)
